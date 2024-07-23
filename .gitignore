@@ -1,0 +1,55 @@
+# .gitignore for a Scala project
+
+# SBT specific files
+target
+project/target/
+project/project/
+
+# Scala specific files
+*.class
+*.log
+*.ctxt
+*.cache
+*.class
+*.log
+*.tmproj
+
+# IntelliJ IDEA files
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse files
+*.metadata
+*.classpath
+*.project
+*.launch
+.settings/
+
+# VS Code files
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Application specific files
+/tmp
+*.db
+
+# Environment-specific files
+.env
+.env.local
+.env.*.local
+.env.test.local
+
+# Log files
+*.log
+
+# Node specific files (if you're using any node modules for frontend)
+node_modules/
+
+# ZIO specific files
+.zioconfig
