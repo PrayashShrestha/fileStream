@@ -1,0 +1,4 @@
+[error] /Users/prayashshrestha/Documents/programming/scala/file-streaming-app/project/Libraries.scala:36:5: not found: value tapirZioHttp
+[error]     tapirZioHttp,
+[error]     ^
+[error] one error found
