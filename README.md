@@ -3,67 +3,103 @@
 This document provides a step-by-step guide to setting up a Scala project using the ZIO and http4s libraries with a well-configured `build.sbt`.
 
 ## Project Structure
+- **Create the SBT project**
+  ```bash
+  sbt new scala/scala3.g8
+  ```
 
-1. **Create the Project Structure:**
+- **Add the required Dependencies**
 
-    ```bash
-    mkdir -p learning/project
-    mkdir -p learning/src/main/scala
-    mkdir -p learning/src/test/scala
-    ```
-
-2. **Add Scalafmt and sbt-assembly Plugins:**
-
-   Create a file named `plugins.sbt` inside the `learning/project` directory with the following content:
-
+  ./project/Libraries.scala
     ```scala
-    addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
-    addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.15.0")
+    import sbt._
+
+  // version Object
+  object Versions {
+    val scalaVersion = "3.3.3"
+
+    val zioVersion        = "2.1.6"
+    val zioHttpVersion    = "3.0.0-RC9"
+    val zioConfigVersion  = "4.0.2"
+    val zioJsonVersion    = "0.7.1"
+    val zioLoggingVersion = "2.1.16"
+
+    val sttpZioJsonVersion = "4.0.0-M16"
+    val tapirVersion       = "1.10.14"
+
+    val flywayVersion = "10.16.0"
+    val hikariVersion = "5.1.0"
+    val quillVersion  = "4.8.0"
+    val sqliteVersion = "3.46.0.0"
+
+    val logbackVersion = "1.5.6"
+  }
+
+  // Libraries setup 
+  object Libraries {
+    import Versions._
+
+    // zio
+    val zioCore           = "dev.zio" %% "zio"                 % zioVersion
+    val zioHttp           = "dev.zio" %% "zio-http"            % zioHttpVersion
+    val zioConfig         = "dev.zio" %% "zio-config"          % zioConfigVersion
+    val zioConfigMagnolia = "dev.zio" %% "zio-config-magnolia" % zioConfigVersion
+    val zioConfigTypesafe = "dev.zio" %% "zio-config-typesafe" % zioConfigVersion
+    val zioJson           = "dev.zio" %% "zio-json"            % zioJsonVersion
+    val zioTest           = "dev.zio" %% "zio-test"            % zioVersion % Test
+    val zioTestSbt        = "dev.zio" %% "zio-test-sbt"        % zioVersion % Test
+
+    //tapir
+    val tapirCore        = "com.softwaremill.sttp.tapir" %% "tapir-core"         % tapirVersion
+    val tapirOpenApiDocs = "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion
+    val tapirSwaggerUi   = "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui"   % tapirVersion
+
+    //db
+    val sqliteJDBC = "org.xerial"   % "sqlite-jdbc"    % sqliteVersion
+    val flyway     = "org.flywaydb" % "flyway-core"    % flywayVersion
+    val hikari     = "com.zaxxer"   % "HikariCP"       % hikariVersion
+    val quill      = "io.getquill" %% "quill-jdbc-zio" % quillVersion
+
+    val zioLogging  = "dev.zio"       %% "zio-logging"       % zioLoggingVersion
+    val slf4jLogger = "dev.zio"       %% "zio-logging-slf4j" % zioLoggingVersion
+    val logback     = "ch.qos.logback" % "logback-classic"   % logbackVersion
+
+    val allDeps = Seq(
+      zioCore,
+      zioHttp,
+      zioConfig,
+      zioConfigMagnolia,
+      zioConfigTypesafe,
+      zioJson,
+      zioTest,
+      zioTestSbt,
+      tapirCore,
+      tapirOpenApiDocs,
+      tapirSwaggerUi,
+      sqliteJDBC,
+      flyway,
+      hikari,
+      quill,
+      zioLogging,
+      slf4jLogger,
+      logback
+    )
+  }
     ```
 
-3. **Configure `build.sbt`:**
-
-   Create a `build.sbt` file in the root of your `learning` directory with the following content:
+- **Configure `build.sbt`:**
 
    ```scala
-   name := "learning"
+  ThisBuild / version := "0.1.0-SNAPSHOT"
 
-   version := "0.1.0-SNAPSHOT"
-   
-   scalaVersion := "3.3.3"
-   
-   lazy val zioVersion = "2.0.17"
-   lazy val http4sVersion = "0.23.12" // Use a stable version of http4s
-   
-   libraryDependencies ++= Seq(
-   "dev.zio" %% "zio" % zioVersion,
-   "dev.zio" %% "zio-streams" % zioVersion,
-   "dev.zio" %% "zio-test" % zioVersion % Test,
-   "dev.zio" %% "zio-test-sbt" % zioVersion % Test,
-   "org.http4s" %% "http4s-blaze-server" % http4sVersion,
-   "org.http4s" %% "http4s-blaze-client" % http4sVersion,
-   "org.http4s" %% "http4s-circe" % http4sVersion,
-   "org.http4s" %% "http4s-dsl" % http4sVersion,
-   "io.circe" %% "circe-generic" % "0.14.5",
-   "io.circe" %% "circe-parser" % "0.14.5"
-   )
-   
-   scalacOptions ++= Seq(
-   "-deprecation",
-   "-encoding", "utf8",
-   "-feature",
-   "-unchecked",
-   "-Wunused:imports",
-   "-Wunused:explicits",
-   "-Wunused:implicits",
-   "-Wunused:locals",
-   "-Wunused:params",
-   "-Wunused:privates",
-   "-Wvalue-discard"
-   )
-   
-   ThisBuild / organization := "com.example"
-   
+  ThisBuild / scalaVersion := Versions.scalaVersion
+
+  lazy val root = (project in file("."))
+    .settings(
+      name := "file-streaming-app"
+    )
+
+  libraryDependencies ++= Libraries.allDeps
    enablePlugins(AssemblyPlugin)
    
    ThisBuild / scalafmtOnCompile := true
@@ -145,6 +181,9 @@ sbt run
 sbt ~reStart
 ```
 
+Or
+- VSCODE: There is small text on top of the object you can click it to run the main object
+
 ## Running the test
 
 To run the tests, use the following command:
@@ -172,4 +211,3 @@ This will create a fat JAR in the target/scala-3.3.3/ directory which you can ru
 ```bash
 java -jar target/scala-3.3.3/learning-assembly-0.1.0-SNAPSHOT.jar
 ```
-
